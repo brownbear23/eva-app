@@ -11,7 +11,9 @@ import SwiftUI
 struct EVALabelApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            IntroView()
+//            LuminanceTestView()
         }
     }
 }
+
