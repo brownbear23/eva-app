@@ -16,13 +16,11 @@ class CameraViewModel: ObservableObject {
     
     private let session: AVCaptureSession
     private var subscriptions = Set<AnyCancellable>()
-    private var isCameraBusy = false
+    private var isCameraBusy = false // Camera model data (original from the model)
     let cameraPreview: AnyView
     let hapticImact = UIImpactFeedbackGenerator()
     
-
-    
-    @Published var recentImage: UIImage?
+    @Published var recentImage: UIImage? // Camera model data (original from the model)
     
     
     @Published var showSetting : Bool = false
@@ -30,17 +28,16 @@ class CameraViewModel: ObservableObject {
     @Published var shutterEffect = false
     @Published var showPreview = false
 
-    var hazards: [String]?
-    var distances: [Int]?
-    var levels: [String]?
+    var hazards: [String]? // Camera model data (original from the model)
+    var distances: [Int]? // Camera model data (original from the model)
+    var levels: [String]? // Camera model data (original from the model)
     
-    @Published var selectedHazard: String = "" //TODO: update
-    @Published var selectedDistance: Int = 0
-    @Published var selectedLevel: String = ""
-    @Published var selectedId: String = ""
-    @Published var selectedAngle: String = ""
-    @Published var selectedLux: String = "999"
-    
+    @Published var selectedHazard: String = "" // Camera model data
+    @Published var selectedDistance: Int = 0 // Camera model data
+    @Published var selectedLevel: String = "" // Camera model data
+    @Published var selectedId: String = "" // Camera model data
+    @Published var selectedAngle: String = "" // Camera model data
+    @Published var selectedLux: String = "999" // Camera model data
     
     
     @Published var searchText: String = ""
