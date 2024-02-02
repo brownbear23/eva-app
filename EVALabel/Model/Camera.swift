@@ -23,6 +23,8 @@ class Camera: NSObject, ObservableObject {
     var session = AVCaptureSession()
     var videoDeviceInput: AVCaptureDeviceInput!
     let photoOutput = AVCapturePhotoOutput()
+    
+    
     var isSilentModeOn = false
     
     private var rawFileURL: URL?
@@ -32,12 +34,13 @@ class Camera: NSObject, ObservableObject {
     @Published var recentImage: UIImage?
     @Published var isCameraBusy = false
 
-    var selectedHazard: String = "null"
+    var selectedHazard: String = ""
     var selectedDistance: Int = 0
-    var selectedLevel: String = "null"
-    var selectedId: String = "null"
-    var selectedAngle: String = "null"
-    var selectedLux: String = "null"
+    var selectedLevel: String = ""
+    var selectedId: String = ""
+    var selectedAngle: String = ""
+    var selectedLux: String = "999"
+    
     
     
     
