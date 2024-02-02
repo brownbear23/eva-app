@@ -8,17 +8,32 @@
 
 /* Begin PBXBuildFile section */
 		9A78924B2B4B8C7000A58A70 /* EVALabelApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A78924A2B4B8C7000A58A70 /* EVALabelApp.swift */; };
-		9A78924D2B4B8C7000A58A70 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A78924C2B4B8C7000A58A70 /* ContentView.swift */; };
+		9A78924D2B4B8C7000A58A70 /* IntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A78924C2B4B8C7000A58A70 /* IntroView.swift */; };
 		9A78924F2B4B8C7300A58A70 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A78924E2B4B8C7300A58A70 /* Assets.xcassets */; };
 		9A7892522B4B8C7300A58A70 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A7892512B4B8C7300A58A70 /* Preview Assets.xcassets */; };
+		9A7BBF352B510DE200AA3A44 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 9A7BBF342B510DE200AA3A44 /* README.md */; };
+		9A7BBF392B54DF0100AA3A44 /* LuminanceTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7BBF382B54DF0100AA3A44 /* LuminanceTestView.swift */; };
+		9A7BBF3D2B55007B00AA3A44 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7BBF3C2B55007B00AA3A44 /* CameraViewModel.swift */; };
+		9A7BBF3F2B550B0800AA3A44 /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7BBF3E2B550B0800AA3A44 /* CameraPreviewView.swift */; };
+		9A7BBF412B55215D00AA3A44 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7BBF402B55215D00AA3A44 /* Camera.swift */; };
+		9ACF82F42B6220D800B2B2D8 /* hazards.csv in Resources */ = {isa = PBXBuildFile; fileRef = 9ACF82F32B6220D800B2B2D8 /* hazards.csv */; };
+		9AD766AC2B4F7C7300AEE275 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD766AB2B4F7C7300AEE275 /* ProfileView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		9A7892472B4B8C7000A58A70 /* EVALabel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EVALabel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A78924A2B4B8C7000A58A70 /* EVALabelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EVALabelApp.swift; sourceTree = "<group>"; };
-		9A78924C2B4B8C7000A58A70 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		9A78924C2B4B8C7000A58A70 /* IntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroView.swift; sourceTree = "<group>"; };
 		9A78924E2B4B8C7300A58A70 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9A7892512B4B8C7300A58A70 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		9A7BBF342B510DE200AA3A44 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		9A7BBF382B54DF0100AA3A44 /* LuminanceTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LuminanceTestView.swift; sourceTree = "<group>"; };
+		9A7BBF3C2B55007B00AA3A44 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
+		9A7BBF3E2B550B0800AA3A44 /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
+		9A7BBF402B55215D00AA3A44 /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
+		9AA6B22E2B59080000DC8F96 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		9ACF82F32B6220D800B2B2D8 /* hazards.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = hazards.csv; sourceTree = "<group>"; };
+		9AD766AB2B4F7C7300AEE275 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +47,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9A76395A2B5ED5B300E365F9 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				9ACF82F32B6220D800B2B2D8 /* hazards.csv */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
 		9A78923E2B4B8C7000A58A70 = {
 			isa = PBXGroup;
 			children = (
@@ -51,10 +74,15 @@
 		9A7892492B4B8C7000A58A70 /* EVALabel */ = {
 			isa = PBXGroup;
 			children = (
+				9A76395A2B5ED5B300E365F9 /* Data */,
+				9AA6B22E2B59080000DC8F96 /* Info.plist */,
+				9A7BBF3B2B54FF7E00AA3A44 /* ViewModel */,
+				9A7BBF3A2B54FF7500AA3A44 /* Model */,
+				9A7BBF2E2B510BE000AA3A44 /* View */,
 				9A78924A2B4B8C7000A58A70 /* EVALabelApp.swift */,
-				9A78924C2B4B8C7000A58A70 /* ContentView.swift */,
 				9A78924E2B4B8C7300A58A70 /* Assets.xcassets */,
 				9A7892502B4B8C7300A58A70 /* Preview Content */,
+				9A7BBF342B510DE200AA3A44 /* README.md */,
 			);
 			path = EVALabel;
 			sourceTree = "<group>";
@@ -65,6 +93,33 @@
 				9A7892512B4B8C7300A58A70 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		9A7BBF2E2B510BE000AA3A44 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				9A78924C2B4B8C7000A58A70 /* IntroView.swift */,
+				9AD766AB2B4F7C7300AEE275 /* ProfileView.swift */,
+				9A7BBF382B54DF0100AA3A44 /* LuminanceTestView.swift */,
+				9A7BBF3E2B550B0800AA3A44 /* CameraPreviewView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		9A7BBF3A2B54FF7500AA3A44 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				9A7BBF402B55215D00AA3A44 /* Camera.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		9A7BBF3B2B54FF7E00AA3A44 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				9A7BBF3C2B55007B00AA3A44 /* CameraViewModel.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,6 +180,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9A7BBF352B510DE200AA3A44 /* README.md in Resources */,
+				9ACF82F42B6220D800B2B2D8 /* hazards.csv in Resources */,
 				9A7892522B4B8C7300A58A70 /* Preview Assets.xcassets in Resources */,
 				9A78924F2B4B8C7300A58A70 /* Assets.xcassets in Resources */,
 			);
@@ -137,8 +194,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9A78924D2B4B8C7000A58A70 /* ContentView.swift in Sources */,
+				9A78924D2B4B8C7000A58A70 /* IntroView.swift in Sources */,
+				9AD766AC2B4F7C7300AEE275 /* ProfileView.swift in Sources */,
+				9A7BBF3F2B550B0800AA3A44 /* CameraPreviewView.swift in Sources */,
 				9A78924B2B4B8C7000A58A70 /* EVALabelApp.swift in Sources */,
+				9A7BBF3D2B55007B00AA3A44 /* CameraViewModel.swift in Sources */,
+				9A7BBF412B55215D00AA3A44 /* Camera.swift in Sources */,
+				9A7BBF392B54DF0100AA3A44 /* LuminanceTestView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -275,11 +337,15 @@
 				DEVELOPMENT_TEAM = 7FVZRD6K74;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = EVALabel/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Grant acess to Camera";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -287,9 +353,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = EVA.EVALabel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -304,11 +374,15 @@
 				DEVELOPMENT_TEAM = 7FVZRD6K74;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = EVALabel/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Grant acess to Camera";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -316,9 +390,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = EVA.EVALabel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
