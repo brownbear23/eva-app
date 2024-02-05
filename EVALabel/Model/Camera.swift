@@ -106,7 +106,7 @@ class Camera: NSObject, ObservableObject {
                 if session.canAddInput(videoDeviceInput) {
                     session.addInput(videoDeviceInput)
                 } else {
-                    fatalError("[Camera]: setupFailed")
+                    fatalError("[Camera.setUpCameraSession]: setupFailed")
                 }
                 
                 // Connect and configure the capture output.
@@ -127,7 +127,7 @@ class Camera: NSObject, ObservableObject {
 
                     
                 } else {
-                    fatalError("[Camera]: setupFailed")
+                    fatalError("[Camera.setUpCameraSession]: setupFailed")
                 }
                 
                 // Session configuration is complete. Commit the configuration.
@@ -164,7 +164,7 @@ class Camera: NSObject, ObservableObject {
     
     
     func capturePhoto() { // Photo taking function
-        print("[Camera]: capturePhoto start")
+        print("[Camera.capturePhoto]: capturePhoto start")
         
         let query = photoOutput.isAppleProRAWEnabled ?
         { AVCapturePhotoOutput.isAppleProRAWPixelFormat($0) } :
@@ -195,7 +195,7 @@ class Camera: NSObject, ObservableObject {
         // Tell the output to capture the photo.
         photoOutput.capturePhoto(with: photoSettings, delegate: self)
         
-        print("[Camera]: Photo's taken")
+        print("[Camera.capturePhoto]: Photo's taken")
         
     }
     
@@ -263,7 +263,7 @@ extension Camera: AVCapturePhotoCaptureDelegate {
     private func makeUniqueDNGFileURL() -> URL {
         let tempDir = FileManager.default.temporaryDirectory
         //        let fileName = ProcessInfo.processInfo.globallyUniqueString
-
+        
         
         let fileName = selectedHazard + "_ID" + selectedId + "_" + String(selectedDistance) + "m_" + selectedLevel + "_ANGLE" + selectedAngle + "_" + selectedLux  + "lux"
         

@@ -56,14 +56,11 @@ class CameraViewModel: ObservableObject {
     func configure() {
         model.requestAndCheckPermissions()
     }
-    
-//ID - meter - height - angle - lux. 
-    
+        
     func switchSilent() {
         isSilentModeOn.toggle()
         print("[CameraViewModel]: Switch silence!")
         model.isSilentModeOn = isSilentModeOn
-        
     }
     
     func saveLabel() {
@@ -111,6 +108,7 @@ class CameraViewModel: ObservableObject {
         
         model.loadHazardsFromCSV()
         
+
         model.$recentImage.sink { [weak self] (photo) in
             guard let pic = photo else { return }
             self?.recentImage = pic
