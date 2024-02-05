@@ -33,6 +33,7 @@ class Camera: NSObject, ObservableObject {
     
     @Published var recentImage: UIImage?
     @Published var isCameraBusy = false
+    @Published var isIp15Pro = true
 
     var selectedHazard: String = ""
     var selectedDistance: Int = 0

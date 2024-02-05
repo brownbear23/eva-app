@@ -80,6 +80,7 @@ struct IntroView: View {
                     LuminanceTestView()
                 }
             }
+            .background(Color.white)
         }
 
     }
