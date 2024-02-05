@@ -19,6 +19,15 @@ struct LuminanceTestView: View {
                 //            viewModel.cameraPreview.onAppear {
                 viewModel.configure()
             }
+            .alert(isPresented: $viewModel.lowResolutionWarning) {
+                Alert(
+                    title: Text("Warning"),
+                    message: Text("This device does not support \n8064 x 6048 resolution."),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
+            
+                
             
             VStack {
                 HStack {

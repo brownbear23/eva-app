@@ -31,7 +31,7 @@ class Camera: NSObject, ObservableObject {
     
     @Published var recentImage: UIImage?
     @Published var isCameraBusy = false
-    @Published var isIp15Pro = true
+    @Published var lowResolutionWarning = false
 
     var selectedHazard: String = ""
     var selectedDistance: Int = 0
@@ -40,7 +40,9 @@ class Camera: NSObject, ObservableObject {
     var selectedAngle: String = ""
     var selectedLux: String = "999"
     
-    
+    var maxWidth = Int32(0)
+    var maxHeight = Int32(0)
+        
     
     
     private func parseCSVAt(url: URL) {
@@ -56,9 +58,34 @@ class Camera: NSObject, ObservableObject {
     }
     
     func loadHazardsFromCSV() {
-            let path = Bundle.main.path(forResource: "hazards", ofType: "csv")!
-            parseCSVAt(url: URL(fileURLWithPath: path))
+        let path = Bundle.main.path(forResource: "hazards", ofType: "csv")!
+        parseCSVAt(url: URL(fileURLWithPath: path))
+    }
+    
+    func areDoublesEqual(_ a: Double, _ b: Double, tolerance: Double = 1.0e-9) -> Bool {
+        return abs(a - b) < 1.0e-9
+    }
+    
+    func getMaxCameraDimension(_ device: AVCaptureDevice) {
+        for format in device.formats {
+            let formatDimensions = format.supportedMaxPhotoDimensions
+            for dimension in formatDimensions {
+//                print("[Camera]: Max format dimensions WxH: \(dimension.width) x \(dimension.height)")
 
+                if (maxWidth < dimension.width) {
+                    if (areDoublesEqual(Double(dimension.width)/Double(dimension.height), 4/3)) {
+                        maxWidth = dimension.width
+                        maxHeight = dimension.height
+                    }
+          
+                }
+ 
+            }
+        }
+        
+        if (maxWidth < 8064) {
+            lowResolutionWarning = true
+        }
     }
     
     
@@ -87,9 +114,18 @@ class Camera: NSObject, ObservableObject {
                     session.addOutput(photoOutput)
                     // Use the Apple ProRAW format when the environment supports it.
                     photoOutput.isAppleProRAWEnabled = true
-                    photoOutput.maxPhotoDimensions = .init(width: 8064, height: 6048)
-//                    photoOutput.maxPhotoDimensions = .init(width: 4032, height: 3024)
                     photoOutput.maxPhotoQualityPrioritization = .quality
+
+                    self.getMaxCameraDimension(device)
+                        
+                    print("[Camera.setUpCameraSession]: Max format dimensions WxH: \(maxWidth) x \(maxHeight)")
+
+                    photoOutput.maxPhotoDimensions = .init(width: maxWidth, height: maxHeight)
+                    
+                    print("[Camera.setUpCameraSession]: MAX width Support: " + String(photoOutput.maxPhotoDimensions.width))
+                    print("[Camera.setUpCameraSession]: MAX height Support: " + String(photoOutput.maxPhotoDimensions.height))
+
+                    
                 } else {
                     fatalError("[Camera]: setupFailed")
                 }
@@ -147,19 +183,14 @@ class Camera: NSObject, ObservableObject {
         let photoSettings = AVCapturePhotoSettings(rawPixelFormatType: rawFormat,
                                                    processedFormat: processedFormat)
         
-  
-        photoSettings.maxPhotoDimensions = .init(width: 8064, height: 6048)
-
-//        photoSettings.maxPhotoDimensions = .init(width: 8064, height: 6048)
-
-   
-        
-
         photoSettings.photoQualityPrioritization = photoOutput.maxPhotoQualityPrioritization
+
         
-        print("[Camera]: MAX width Support " + String(photoOutput.maxPhotoDimensions.width))
-        print("[Camera]: MAX height Support " + String(photoOutput.maxPhotoDimensions.height))
+
         
+        photoSettings.maxPhotoDimensions = .init(width: maxWidth, height: maxHeight)
+        
+
         
         // Tell the output to capture the photo.
         photoOutput.capturePhoto(with: photoSettings, delegate: self)

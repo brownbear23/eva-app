@@ -42,6 +42,8 @@ class CameraViewModel: ObservableObject {
     
     @Published var searchText: String = ""
     
+    @Published var lowResolutionWarning = false // Camera model data (original from the model)
+
     
     var filteredHazards: [String]? {
             guard !searchText.isEmpty else { return hazards }
@@ -121,6 +123,8 @@ class CameraViewModel: ObservableObject {
         .store(in: &self.subscriptions)        
         
         
+        model.$lowResolutionWarning.sink { [weak self] (result) in
+            self?.lowResolutionWarning = result
         }
         .store(in: &self.subscriptions)
         
