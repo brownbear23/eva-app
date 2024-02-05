@@ -16,7 +16,6 @@ struct LuminanceTestView: View {
             Color.yellow.ignoresSafeArea()
             
             viewModel.cameraPreview.ignoresSafeArea().onAppear {
-                //            viewModel.cameraPreview.onAppear {
                 viewModel.configure()
             }
             .alert(isPresented: $viewModel.lowResolutionWarning) {
@@ -30,7 +29,7 @@ struct LuminanceTestView: View {
                 
             
             VStack {
-                HStack {
+                HStack(alignment: .top) {
                     // Shutter sound btn
                     Button(action: {viewModel.switchSilent()}) { //Label btn
                         Image(systemName: viewModel.isSilentModeOn ? "speaker.fill" : "speaker").foregroundColor(viewModel.isSilentModeOn ? .yellow : .white)
@@ -47,7 +46,7 @@ struct LuminanceTestView: View {
                     
                 }
                 .padding(.horizontal, 10)
-                .padding(.top, 40)
+                .padding(.top, 20)
                 .font(.system(size: 25))
                 
                 Spacer()
