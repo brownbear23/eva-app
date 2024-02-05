@@ -114,35 +114,21 @@ class CameraViewModel: ObservableObject {
             self?.recentImage = pic
         }
         .store(in: &self.subscriptions)
-        
-        
-        
+
         model.$isCameraBusy.sink { [weak self] (result) in
             self?.isCameraBusy = result
         }
-        .store(in: &self.subscriptions)
+        .store(in: &self.subscriptions)        
         
         
-        
-        model.$levels.sink { [weak self] (result) in
-            self?.levels = result
         }
         .store(in: &self.subscriptions)
         
-        
-        
-        model.$hazards.sink { [weak self] (result) in
-            self?.hazards = result
-        }
-        .store(in: &self.subscriptions)
+        self.levels = model.levels
+        self.hazards = model.hazards
+        self.distances = model.distances
 
+                
 
-
-        model.$distances.sink { [weak self] (result) in
-            self?.distances = result
-        }
-        .store(in: &self.subscriptions)
-        
-    
     }
 }

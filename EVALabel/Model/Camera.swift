@@ -14,12 +14,10 @@ import Photos
 
 class Camera: NSObject, ObservableObject {
     
-    @Published var hazards: [String]?
-    @Published var distances = [1, 3, 5]
-    @Published var levels = ["eye", "waist"]
+    var hazards: [String]? //Publish not necessary
+    var distances = [1, 3, 5] //Publish not necessary
+    var levels = ["eye", "waist"] //Publish not necessary
 
-
-    
     var session = AVCaptureSession()
     var videoDeviceInput: AVCaptureDeviceInput!
     let photoOutput = AVCapturePhotoOutput()
