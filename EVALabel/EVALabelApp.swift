@@ -12,7 +12,7 @@ struct EVALabelApp: App {
     var body: some Scene {
         WindowGroup {
             IntroView()
-//            LuminanceTestView()
+//            PhotoCaptureLabelView()
         }
     }
 }

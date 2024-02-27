@@ -1,5 +1,5 @@
 //
-//  LuminanceTestView.swift
+//  PhotoCaptureLabelView.swift
 //  EVALabel
 //
 //  Created by Bill Han on 1/15/24.
@@ -8,7 +8,7 @@
 import SwiftUI
 import Foundation
 
-struct LuminanceTestView: View {
+struct PhotoCaptureLabelView: View {
     @ObservedObject var viewModel = CameraViewModel()
     
     var body: some View {
@@ -231,5 +231,5 @@ struct LuminanceTestView: View {
 
 
 #Preview {
-    LuminanceTestView()
+    PhotoCaptureLabelView()
 }

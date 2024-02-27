@@ -9,7 +9,7 @@ import SwiftUI
 
 enum StackViewType {
     case profileView
-    case luminanceTestView
+    case photoCaptureLabelView
 }
 
 struct IntroView: View {
@@ -49,9 +49,9 @@ struct IntroView: View {
                 VStack () {
                     
                     Button(
-                        action: {path.append(.luminanceTestView)},
+                        action: {path.append(.photoCaptureLabelView)},
                         label: {
-                            Text("Luminance Contrast Test")
+                            Text("Capture and Label")
                                 .foregroundColor(.white)
                         })
                     .padding([.vertical])
@@ -76,8 +76,8 @@ struct IntroView: View {
                 switch stackViewType {
                 case .profileView:
                     ProfileView()
-                case .luminanceTestView:
-                    LuminanceTestView()
+                case .photoCaptureLabelView:
+                    PhotoCaptureLabelView()
                 }
             }
             .background(Color.white)
