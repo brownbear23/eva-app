@@ -12,7 +12,7 @@ import Photos
 
 
 
-class Camera: NSObject, ObservableObject {
+class CameraModel: NSObject, ObservableObject {
     
     var hazards: [String]? //Publish not necessary
     var distances = [1, 3, 5] //Publish not necessary
@@ -214,7 +214,7 @@ class Camera: NSObject, ObservableObject {
     
 }
 
-extension Camera: AVCapturePhotoCaptureDelegate {
+extension CameraModel: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, willBeginCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
         self.isCameraBusy = true
     }
