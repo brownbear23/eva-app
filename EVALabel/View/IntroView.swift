@@ -10,6 +10,7 @@ import SwiftUI
 enum StackViewType {
     case profileView
     case photoCaptureLabelView
+    case linearFilterView
 }
 
 struct IntroView: View {
@@ -60,9 +61,9 @@ struct IntroView: View {
                     
                     
                     Button(
-                        action: {},
+                        action: {path.append(.linearFilterView)},
                         label: {
-                            Text("LiDar Test")
+                            Text("Linear Filter")
                                 .foregroundColor(.white)
                         })
                     .padding([.vertical])
@@ -78,11 +79,13 @@ struct IntroView: View {
                     ProfileView()
                 case .photoCaptureLabelView:
                     PhotoCaptureLabelView()
+                case .linearFilterView:
+                    LinearFilterView()
                 }
             }
             .background(Color.white)
         }
-
+        
     }
 }
 
