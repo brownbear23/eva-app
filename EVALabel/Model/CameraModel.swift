@@ -305,13 +305,6 @@ extension CameraModel: AVCapturePhotoCaptureDelegate {
                 creationRequest.addResource(with: .photo,
                                             fileURL: rawFileURL,
                                             options: options)
-                
-                
-                //                // Add the compressed (HEIF) data as an alternative resource.
-                //                creationRequest.addResource(with: .alternatePhoto,
-                //                                            data: compressedData,
-                //                                            options: nil)
-                
             } completionHandler: { success, error in
                 // Process the Photos library error.
             }
