@@ -6,12 +6,12 @@ import Photos
 class LinearFilterModel: ObservableObject {
     
     var filteredImg: UIImage = UIImage()
-    var va: CGFloat = 0
-    var cs: CGFloat = 0
+    var va: Double = 0
+    var cs: Double = 0
     var imgData: Data?
     var filteredImgName: String = "null"
     
-    func addFilterSample(_ imgData: Data?, _ imgName: String, _ va: CGFloat, _ cs: CGFloat) -> (UIImage?, String) {
+    func addFilterSample(_ imgData: Data?, _ imgName: String, _ va: Double, _ cs: Double) -> (UIImage?, String) {
         
         guard let inputImgData = imgData else {
             print("Input image data is nil.")
@@ -99,7 +99,7 @@ class LinearFilterModel: ObservableObject {
     }
     
     
-    func findShift(_ va: CGFloat, _ cs: CGFloat) -> (hor: CGFloat, ver: CGFloat) {
+    func findShift(_ va: Double, _ cs: Double) -> (hor: Double, ver: Double) {
         if let data = readCSV(fromFilePath: Bundle.main.path(forResource: "va_cs_matrix", ofType: "csv")!) {
             let rows = parseCSV(data: data)
             for row in rows {
@@ -111,7 +111,7 @@ class LinearFilterModel: ObservableObject {
         return (0, 0)
     }
     
-    private func angleOfView(_ sensorSize: CGFloat, _ focalLength: CGFloat) -> CGFloat {
+    private func angleOfView(_ sensorSize: Double, _ focalLength: Double) -> Double {
         return 2 * atan(sensorSize / (2 * focalLength)) * (180 / Double.pi)
     }
     
@@ -120,8 +120,8 @@ class LinearFilterModel: ObservableObject {
     
     
     func createMeshGrid(_ imgHeight: Int, _ imgWidth: Int, _ vertAoV: Double, _ horAoV: Double) -> (ux: [[Double]], uy: [[Double]]) {
-        let fx = stride(from: -CGFloat(imgWidth)/2, to: CGFloat(imgWidth)/2, by: 1).map { $0 / horAoV }
-        let fy = stride(from: -CGFloat(imgHeight)/2, to: CGFloat(imgHeight)/2, by: 1).map { $0 / vertAoV }
+        let fx = stride(from: -Double(imgWidth)/2, to: Double(imgWidth)/2, by: 1).map { $0 / horAoV }
+        let fy = stride(from: -Double(imgHeight)/2, to: Double(imgHeight)/2, by: 1).map { $0 / vertAoV }
         
         var ux = [[Double]](repeating: [Double](repeating: 0.0, count: fx.count), count: fy.count)
         var uy = [[Double]](repeating: [Double](repeating: 0.0, count: fx.count), count: fy.count)
@@ -138,7 +138,7 @@ class LinearFilterModel: ObservableObject {
     
     
     
-    func meanLum(image: CGImage, pixels: UnsafeMutableBufferPointer<Pixel>) -> (CGFloat, CGFloat, CGFloat) {
+    func meanLum(image: CGImage, pixels: UnsafeMutableBufferPointer<Pixel>) -> (Double, Double, Double) {
         let height = image.height
         let width = image.width
         let totalPixels = height * width
@@ -157,7 +157,7 @@ class LinearFilterModel: ObservableObject {
         }
         
         
-        return (CGFloat(totalR)/CGFloat(totalPixels), CGFloat(totalG)/CGFloat(totalPixels), CGFloat(totalB)/CGFloat(totalPixels))
+        return (Double(totalR)/Double(totalPixels), Double(totalG)/Double(totalPixels), Double(totalB)/Double(totalPixels))
     }
     
     
@@ -197,7 +197,7 @@ class LinearFilterModel: ObservableObject {
                 let index = y * width + x
                 var pixel = pixels[index]
                 if pixel.red != 255 {
-                    let redValue = CGFloat(pixel.red)  // Convert the red component to CGFloat
+                    let redValue = Double(pixel.red)  // Convert the red component to Double
                     let adjustedValue = 255 - redValue // Invert the red value
                     let scaledValue = adjustedValue * verShift // Apply the vertical shift scaling
                     let finalValue = 255 - scaledValue // Invert the value back
@@ -205,7 +205,7 @@ class LinearFilterModel: ObservableObject {
                     pixel.red = UInt8(max(0, min(255, finalValue)))
                 }
                 if pixel.green != 255 {
-                    let greenValue = CGFloat(pixel.green)
+                    let greenValue = Double(pixel.green)
                     let adjustedValue = 255 - greenValue
                     let scaledValue = adjustedValue * verShift
                     let finalValue = 255 - scaledValue
@@ -213,7 +213,7 @@ class LinearFilterModel: ObservableObject {
                     pixel.green = UInt8(max(0, min(255, finalValue)))
                 }
                 if pixel.blue != 255 {
-                    let blueValue = CGFloat(pixel.blue)
+                    let blueValue = Double(pixel.blue)
                     let adjustedValue = 255 - blueValue
                     let scaledValue = adjustedValue * verShift
                     let finalValue = 255 - scaledValue
@@ -269,7 +269,7 @@ class LinearFilterModel: ObservableObject {
     
     
     
-    func applyFilter(to imgData: Data, va: CGFloat, cs: CGFloat) -> UIImage? {
+    func applyFilter(to imgData: Data, va: Double, cs: Double) -> UIImage? {
         
         //        guard let cgImage = image.cgImage else { return nil }
         let image = UIImage(data: imgData)!
@@ -360,10 +360,10 @@ class LinearFilterModel: ObservableObject {
     
     
     struct CSVRow {
-        let va: CGFloat
-        let cs: CGFloat
-        let a: CGFloat
-        let b: CGFloat
+        let va: Double
+        let cs: Double
+        let a: Double
+        let b: Double
     }
     
     
