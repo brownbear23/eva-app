@@ -209,7 +209,7 @@ class LinearFilterModel: ObservableObject {
                     let adjustedValue = 255 - greenValue
                     let scaledValue = adjustedValue * verShift
                     let finalValue = 255 - scaledValue
-
+                    
                     pixel.green = UInt8(max(0, min(255, finalValue)))
                 }
                 if pixel.blue != 255 {
@@ -217,7 +217,7 @@ class LinearFilterModel: ObservableObject {
                     let adjustedValue = 255 - blueValue
                     let scaledValue = adjustedValue * verShift
                     let finalValue = 255 - scaledValue
-
+                    
                     pixel.blue = UInt8(max(0, min(255, finalValue)))
                 }
                 pixels[index] = pixel
@@ -296,14 +296,8 @@ class LinearFilterModel: ObservableObject {
         imageContext.draw(cgImage!, in: CGRect(x: 0, y: 0, width: width, height: height))
         
         let pixels = UnsafeMutableBufferPointer<Pixel>(start: imageData, count: width * height)
-        print(pixels[4563454].red)
-        print(pixels[4563454].green)
-        print(pixels[4563454].blue)
+        
         shifting(image: image, pixels: pixels, va: va, cs: cs)
-        print("----")
-        print(pixels[4563454].red)
-        print(pixels[4563454].green)
-        print(pixels[4563454].blue)
         
         guard let imageContext = CGContext(
             data: pixels.baseAddress,
@@ -314,7 +308,6 @@ class LinearFilterModel: ObservableObject {
             space: colorSpace,
             bitmapInfo: bitmapInfo
         ) else { return nil }
-        
         
         
         guard let newCGImage = imageContext.makeImage() else { return nil }
