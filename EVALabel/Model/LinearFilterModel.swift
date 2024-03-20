@@ -2,6 +2,7 @@
 import Foundation
 import UIKit
 import Photos
+import Accelerate
 
 class LinearFilterModel: ObservableObject {
     
@@ -161,34 +162,124 @@ class LinearFilterModel: ObservableObject {
     }
     
     
+    func sSF0(ux: [[Double]], uy: [[Double]]) -> [[Double]] {
+        let yCount = ux.count
+        let xCount = ux[0].count
+        var retSSF0 = [[Double]](repeating: [Double](repeating: 0.0, count: xCount), count: yCount)
+        for y in 0..<yCount {
+            for x in 0..<xCount {
+                retSSF0[y][x] = sqrt(ux[y][x]*ux[y][x] + uy[y][x]*uy[y][x] + 0.0001)
+            }
+        }
+        return retSSF0
+    }
     
-    func shifting(image: UIImage, pixels: UnsafeMutableBufferPointer<Pixel>, va: CGFloat, cs: CGFloat){
-        var horShift: CGFloat = 0
-        var verShift: CGFloat = 0
+    func sSF(sSF0: [[Double]], horShift: Double) -> [[Double]] {
+        let yCount = sSF0.count
+        let xCount = sSF0[0].count
+        var retSSF = [[Double]](repeating: [Double](repeating: 0.0, count: xCount), count: yCount)
+        
+        for y in 0..<yCount {
+            for x in 0..<xCount {
+                retSSF[y][x] = sSF0[y][x] * horShift
+            }
+        }
+        return retSSF
+    }
+    
+    func csf(meanLum: Double, sSF_0: [[Double]], imgAngSize: Double) -> [[Double]] {
+        let yCount = sSF_0.count
+        let xCount = sSF_0[0].count
+        var retCsf = [[Double]](repeating: [Double](repeating: 0.0, count: xCount), count: yCount)
+        for y in 0..<yCount {
+            for x in 0..<xCount {
+                var sSFEl = sSF_0[y][x]
+                retCsf[y][x] = 5200 * exp(-0.0016*pow((100/meanLum+1), 0.08) * pow(sSFEl, 2)) / sqrt((0.64 * pow(sSFEl, 2) + 144/imgAngSize + 1) * (1/(1-exp(-0.02 * pow(sSFEl, 2)))) + 63/pow(meanLum, 0.83)) //TODO: GT again
+            }
+        }
+        return retCsf
+    }
+    
+    func nCSF(CSF: [[Double]], CSF0: [[Double]]) -> [[Double]] {
+        let yCount = CSF.count
+        let xCount = CSF[0].count
+        var retNCsf = [[Double]](repeating: [Double](repeating: 0.0, count: xCount), count: yCount)
+        for y in 0..<yCount {
+            for x in 0..<xCount {
+                retNCsf[y][x] = CSF[y][x] / CSF0[y][x]
+                }
+        }
+        retNCsf = fftshift(retNCsf)
+        
+        
+        for i in 0..<retNCsf.count {
+            for j in 0..<retNCsf[i].count {
+                if retNCsf[i][j] > 1 {
+                    retNCsf[i][j] = 1
+                }
+            }
+        }
+        retNCsf[0][0] = 1
+        return retNCsf
+    }
+    
+    
+
+    func fftshift(_ matrix: [[Double]]) -> [[Double]] {
+        let rowCount = matrix.count
+        let columnCount = matrix.first?.count ?? 0
+
+        // Check for empty matrix or non-rectangular input
+        guard rowCount > 0, columnCount > 0, matrix.allSatisfy({ $0.count == columnCount }) else {
+            return [[]]
+        }
+
+        // Calculate midpoints
+        let midRow = rowCount / 2
+        let midColumn = columnCount / 2
+
+        // Initialize a new matrix with the same size
+        var shiftedMatrix = Array(repeating: Array(repeating: 0.0, count: columnCount), count: rowCount)
+
+        for i in 0..<rowCount {
+            for j in 0..<columnCount {
+                // Calculate new positions
+                let newI = (i + midRow) % rowCount
+                let newJ = (j + midColumn) % columnCount
+
+                // Swap elements
+                shiftedMatrix[newI][newJ] = matrix[i][j]
+            }
+        }
+
+        return shiftedMatrix
+    }
+    
+    
+    
+    func fft(image: CGImage, pixels: UnsafeMutableBufferPointer<Pixel>) -> UnsafeMutableBufferPointer<Pixel> {
+        return pixels
+    }
+
+    
+    
+    
+
+
+    
+    
+    func shifting(image: UIImage, pixels: UnsafeMutableBufferPointer<Pixel>, va: Double, cs: Double){
+        var horShift: Double = 0
+        var verShift: Double = 0
         (horShift, verShift) = findShift(va, cs)
         print("HSHIFT: " + horShift.description)
         print("VSHIFT: " + verShift.description)
         
-        let FOCAL_LENGTH = 6.86
-        let horAoV = angleOfView(9.8, FOCAL_LENGTH)
-        let vertAoV = angleOfView(7.3, FOCAL_LENGTH)
-        let imgAngSize = horAoV * vertAoV
         
         let image = image.cgImage
-        
-        var ux: [[Double]]?
-        var uy: [[Double]]?
-        
         let height = image!.height
         let width = image!.width
         
-//        (ux, uy) = createMeshGrid(height, width, vertAoV, horAoV)
-//        
-//        
-//        var meanR: CGFloat = 0
-//        var meanG: CGFloat = 0
-//        var meanB: CGFloat = 0
-//        (meanR, meanG, meanB) = meanLum(image: image!, pixels: pixels)
         
         
         // Vertical Shift
@@ -224,44 +315,66 @@ class LinearFilterModel: ObservableObject {
             }
         }
         
-        
         // Horizontal Shift
         
+        let FOCAL_LENGTH = 6.86
+        let horAoV = angleOfView(9.8, FOCAL_LENGTH)
+        let vertAoV = angleOfView(7.3, FOCAL_LENGTH)
+        let imgAngSize = horAoV * vertAoV
+        
+        var ux: [[Double]]?
+        var uy: [[Double]]?
+        (ux, uy) = createMeshGrid(height, width, vertAoV, horAoV)
         
         
         
         
-        //        let cgImage = image.cgImage
-        //
-        //        let width = cgImage!.width
-        //        let height = cgImage!.height
-        //
-        //        for y in 0..<height {
-        //            for x in 0..<width {
-        //                let index = y * width + x
-        //                var pixel = pixels[index]
-        //
-        //
-        // Contrast
-        //                pixel.red = UInt8(max(min(255, avgRed + 2 * redDelta), 0))
-        //                pixel.blue = UInt8(max(min(255, avgBlue + 2 * blueDelta), 0))
-        //                pixel.green = UInt8(max(min(255, avgGreen + 2 * greenDelta), 0))
+        
+        var meanR: Double = 0
+        var meanG: Double = 0
+        var meanB: Double = 0
+        (meanR, meanG, meanB) = meanLum(image: image!, pixels: pixels)
         
         
-        //Greyscale
-        //                    let avg = Int(Double(Int(pixel.red) + Int(pixel.blue) + Int(pixel.green))/3.0)
-        //                    let pixelColor = UInt8(avg)
-        //                    pixel.red = pixelColor
-        //                    pixel.blue = pixelColor
-        //                    pixel.green = pixelColor
-        //
-        //
-        //                pixels[index] = pixel
-        //
-        //            }
-        //        }
+        let sSF0: [[Double]] = sSF0(ux: ux!, uy: uy!)
+        let sSF: [[Double]] = sSF(sSF0: sSF0, horShift: horShift)
         
         
+        
+        
+        var count = 0;
+        for meanLum in [meanR, meanG, meanB] {
+            let CSF0: [[Double]] = csf(meanLum: meanLum, sSF_0: sSF0, imgAngSize: imgAngSize)
+            let CSF: [[Double]] = csf(meanLum: meanLum, sSF_0: sSF, imgAngSize: imgAngSize)
+            
+            let nCSF: [[Double]] = nCSF(CSF: CSF, CSF0: CSF0)
+              
+            
+            //Y = np.fft.fft2(thisimage)
+            //filtImg = np.fft.ifft2(nCSF*Y)
+            //finalImg[:,:,j] = filtImg.astype(np.uint8)
+            let filtImg: [[Double]] = [[0, 1, 2]]
+            
+            
+            for y in 0..<height {
+                for x in 0..<width {
+                    let index = y * width + x
+                    var pixel = pixels[index]
+                    if count == 0 {
+                        pixel.red = UInt8(filtImg[y][x])
+                        pixels[index] = pixel
+                    } else if count == 1 {
+                        pixel.green = UInt8(filtImg[y][x])
+                        pixels[index] = pixel
+                    } else {
+                        pixel.blue = UInt8(filtImg[y][x])
+                        pixels[index] = pixel
+                    }
+                    
+                }
+            }
+            count+=1
+        }
         
         
     }
