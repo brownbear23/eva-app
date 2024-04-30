@@ -9,8 +9,8 @@ class LinearFilterViewModel: ObservableObject {
     @Published var showFilteredImg : Bool = false
     
     @Published var filteredImg: UIImage?
-    @Published var va: String = "1.38"
-    @Published var cs: String = "0.7"
+    @Published var va: String = "0.31"
+    @Published var cs: String = "1.78"
     @Published var filteredImgName = "null"
     
     init(_ model: LinearFilterModel) {
@@ -22,18 +22,18 @@ class LinearFilterViewModel: ObservableObject {
         if (imgName != "null") {
             showFilteredImg = true
             
-            var va_f: CGFloat = 0
-            var cs_f: CGFloat = 0
+            var va_f: Float = 0
+            var cs_f: Float = 0
             
             if originalImgData != nil {
                 if let n = NumberFormatter().number(from: va) {
-                    va_f = CGFloat(truncating: n)
+                    va_f = Float(truncating: n)
                 }
                 if let n = NumberFormatter().number(from: cs) {
-                    cs_f = CGFloat(truncating: n)
+                    cs_f = Float(truncating: n)
                 }
                 
-                (filteredImg, filteredImgName)  = model.addFilterSample(originalImgData, imgName, va_f, cs_f)
+                (filteredImg, filteredImgName)  = model.addFilter(originalImgData, imgName, va_f, cs_f)
             }
             
         }

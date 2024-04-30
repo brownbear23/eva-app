@@ -11,6 +11,8 @@ enum StackViewType {
     case profileView
     case photoCaptureLabelView
     case linearFilterView
+    case pointCloudCaptureView
+
 }
 
 struct IntroView: View {
@@ -69,6 +71,17 @@ struct IntroView: View {
                     .padding([.vertical])
                     .frame(maxWidth: .infinity)
                     .background(Color.blue)
+                    
+                    
+                    Button(
+                        action: {path.append(.pointCloudCaptureView)},
+                        label: {
+                            Text("Capture Point Cloud")
+                                .foregroundColor(.white)
+                        })
+                    .padding([.vertical])
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
                 }
                 .padding()
                 Spacer()
@@ -81,6 +94,8 @@ struct IntroView: View {
                     PhotoCaptureLabelView()
                 case .linearFilterView:
                     LinearFilterView()
+                case .pointCloudCaptureView:
+                    PointCloudCaptureView()
                 }
             }
             .background(Color.white)

@@ -3,16 +3,17 @@ import Foundation
 import UIKit
 import Photos
 import Accelerate
+import Foundation
 
 class LinearFilterModel: ObservableObject {
     
     var filteredImg: UIImage = UIImage()
-    var va: Double = 0
-    var cs: Double = 0
+    var va: Float = 0
+    var cs: Float = 0
     var imgData: Data?
     var filteredImgName: String = "null"
     
-    func addFilterSample(_ imgData: Data?, _ imgName: String, _ va: Double, _ cs: Double) -> (UIImage?, String) {
+    func addFilter(_ imgData: Data?, _ imgName: String, _ va: Float, _ cs: Float) -> (UIImage?, String) {
         
         guard let inputImgData = imgData else {
             print("Input image data is nil.")
@@ -23,8 +24,10 @@ class LinearFilterModel: ObservableObject {
         self.cs = va
         self.imgData = imgData
         
+        print("Applying Filter...")
         filteredImg = applyFilter(to: inputImgData, va: va, cs: cs)!
-        
+        print("Applying Filter DONE")
+
         let nameComponents = imgName.split(separator: ".")
         let vaStr: String = va.description.replacingOccurrences(of: ".", with: "-", options: .literal, range: nil)
         let csStr: String = cs.description.replacingOccurrences(of: ".", with: "-", options: .literal, range: nil)
@@ -35,8 +38,10 @@ class LinearFilterModel: ObservableObject {
     
     
     func saveFilteredImg() {
+        print("Saving Filtered Image...")
+
         let tempDir = FileManager.default.temporaryDirectory
-        let fileURL = tempDir.appendingPathComponent(filteredImgName).appendingPathExtension("dng")
+        let fileURL = tempDir.appendingPathComponent(filteredImgName).appendingPathExtension("png")
         
         do {
             //            try imgData?.write(to: fileURL)
@@ -65,230 +70,42 @@ class LinearFilterModel: ObservableObject {
                 // Process the Photos library error.
             }
         }
-        
+        print("Saving Filtered Image DONE")
     }
-    
-    
-    
-    
-    func readCSV(fromFilePath filePath: String) -> String? {
-        do {
-            let contents = try String(contentsOfFile: filePath)
-            return contents
-        } catch {
-            print("Error reading file: \(error)")
-            return nil
-        }
-    }
-    
-    
-    func parseCSV(data: String) -> [CSVRow] {
-        var rows: [CSVRow] = []
-        let lines = data.components(separatedBy: CharacterSet.newlines)
-        for line in lines.dropFirst() {
-            let columns = line.split(separator: ",")
-            if columns.count == 4,
-               let va = Double(columns[0]),
-               let cs = Double(columns[1]),
-               let a = Double(columns[2]),
-               let b = Double(columns[3]) {
-                let row = CSVRow(va: va, cs: cs, a: a, b: b)
-                rows.append(row)
-            }
-        }
-        return rows
-    }
-    
-    
-    func findShift(_ va: Double, _ cs: Double) -> (hor: Double, ver: Double) {
-        if let data = readCSV(fromFilePath: Bundle.main.path(forResource: "va_cs_matrix", ofType: "csv")!) {
-            let rows = parseCSV(data: data)
-            for row in rows {
-                if row.va == va && row.cs == cs {
-                    return (row.a, row.b)
-                }
-            }
-        }
-        return (0, 0)
-    }
-    
-    private func angleOfView(_ sensorSize: Double, _ focalLength: Double) -> Double {
-        return 2 * atan(sensorSize / (2 * focalLength)) * (180 / Double.pi)
-    }
-    
-    
-    
-    
-    
-    func createMeshGrid(_ imgHeight: Int, _ imgWidth: Int, _ vertAoV: Double, _ horAoV: Double) -> (ux: [[Double]], uy: [[Double]]) {
-        let fx = stride(from: -Double(imgWidth)/2, to: Double(imgWidth)/2, by: 1).map { $0 / horAoV }
-        let fy = stride(from: -Double(imgHeight)/2, to: Double(imgHeight)/2, by: 1).map { $0 / vertAoV }
-        
-        var ux = [[Double]](repeating: [Double](repeating: 0.0, count: fx.count), count: fy.count)
-        var uy = [[Double]](repeating: [Double](repeating: 0.0, count: fx.count), count: fy.count)
-        
-        for (i, y) in fy.enumerated() {
-            for (j, x) in fx.enumerated() {
-                ux[i][j] = x
-                uy[i][j] = y
-            }
-        }
-        return (ux, uy)
-    }
-    
-    
-    
-    
-    func meanLum(image: CGImage, pixels: UnsafeMutableBufferPointer<Pixel>) -> (Double, Double, Double) {
-        let height = image.height
-        let width = image.width
-        let totalPixels = height * width
-        var totalR: UInt64 = 0
-        var totalG: UInt64 = 0
-        var totalB: UInt64 = 0
-        
-        for y in 0..<height {
-            for x in 0..<width {
-                let index = y * width + x
-                var pixel = pixels[index]
-                totalR += UInt64(pixel.red)
-                totalG += UInt64(pixel.green)
-                totalB += UInt64(pixel.blue)
-            }
-        }
-        
-        
-        return (Double(totalR)/Double(totalPixels), Double(totalG)/Double(totalPixels), Double(totalB)/Double(totalPixels))
-    }
-    
-    
-    func sSF0(ux: [[Double]], uy: [[Double]]) -> [[Double]] {
-        let yCount = ux.count
-        let xCount = ux[0].count
-        var retSSF0 = [[Double]](repeating: [Double](repeating: 0.0, count: xCount), count: yCount)
-        for y in 0..<yCount {
-            for x in 0..<xCount {
-                retSSF0[y][x] = sqrt(ux[y][x]*ux[y][x] + uy[y][x]*uy[y][x] + 0.0001)
-            }
-        }
-        return retSSF0
-    }
-    
-    func sSF(sSF0: [[Double]], horShift: Double) -> [[Double]] {
-        let yCount = sSF0.count
-        let xCount = sSF0[0].count
-        var retSSF = [[Double]](repeating: [Double](repeating: 0.0, count: xCount), count: yCount)
-        
-        for y in 0..<yCount {
-            for x in 0..<xCount {
-                retSSF[y][x] = sSF0[y][x] * horShift
-            }
-        }
-        return retSSF
-    }
-    
-    func csf(meanLum: Double, sSF_0: [[Double]], imgAngSize: Double) -> [[Double]] {
-        let yCount = sSF_0.count
-        let xCount = sSF_0[0].count
-        var retCsf = [[Double]](repeating: [Double](repeating: 0.0, count: xCount), count: yCount)
-        for y in 0..<yCount {
-            for x in 0..<xCount {
-                var sSFEl = sSF_0[y][x]
-                retCsf[y][x] = 5200 * exp(-0.0016*pow((100/meanLum+1), 0.08) * pow(sSFEl, 2)) / sqrt((0.64 * pow(sSFEl, 2) + 144/imgAngSize + 1) * (1/(1-exp(-0.02 * pow(sSFEl, 2)))) + 63/pow(meanLum, 0.83)) //TODO: GT again
-            }
-        }
-        return retCsf
-    }
-    
-    func nCSF(CSF: [[Double]], CSF0: [[Double]]) -> [[Double]] {
-        let yCount = CSF.count
-        let xCount = CSF[0].count
-        var retNCsf = [[Double]](repeating: [Double](repeating: 0.0, count: xCount), count: yCount)
-        for y in 0..<yCount {
-            for x in 0..<xCount {
-                retNCsf[y][x] = CSF[y][x] / CSF0[y][x]
-                }
-        }
-        retNCsf = fftshift(retNCsf)
-        
-        
-        for i in 0..<retNCsf.count {
-            for j in 0..<retNCsf[i].count {
-                if retNCsf[i][j] > 1 {
-                    retNCsf[i][j] = 1
-                }
-            }
-        }
-        retNCsf[0][0] = 1
-        return retNCsf
-    }
-    
     
 
-    func fftshift(_ matrix: [[Double]]) -> [[Double]] {
-        let rowCount = matrix.count
-        let columnCount = matrix.first?.count ?? 0
-
-        // Check for empty matrix or non-rectangular input
-        guard rowCount > 0, columnCount > 0, matrix.allSatisfy({ $0.count == columnCount }) else {
-            return [[]]
-        }
-
-        // Calculate midpoints
-        let midRow = rowCount / 2
-        let midColumn = columnCount / 2
-
-        // Initialize a new matrix with the same size
-        var shiftedMatrix = Array(repeating: Array(repeating: 0.0, count: columnCount), count: rowCount)
-
-        for i in 0..<rowCount {
-            for j in 0..<columnCount {
-                // Calculate new positions
-                let newI = (i + midRow) % rowCount
-                let newJ = (j + midColumn) % columnCount
-
-                // Swap elements
-                shiftedMatrix[newI][newJ] = matrix[i][j]
-            }
-        }
-
-        return shiftedMatrix
-    }
     
-    
-    
-    func fft(image: CGImage, pixels: UnsafeMutableBufferPointer<Pixel>) -> UnsafeMutableBufferPointer<Pixel> {
-        return pixels
-    }
-
-    
-    
-    
-
-
-    
-    
-    func shifting(image: UIImage, pixels: UnsafeMutableBufferPointer<Pixel>, va: Double, cs: Double){
-        var horShift: Double = 0
-        var verShift: Double = 0
+    func shifting(image: UIImage, serialImagePixels: UnsafeMutableBufferPointer<LinearFilterModel.Pixel>, va: Float, cs: Float){
+        var horShift: Float = 0
+        var verShift: Float = 0
         (horShift, verShift) = findShift(va, cs)
+        
+        horShift = 1 / 0.157 //TODO: for testing purpose
+        verShift = 1
+        
+        
         print("HSHIFT: " + horShift.description)
         print("VSHIFT: " + verShift.description)
+        
+        horShift = 1/horShift
         
         
         let image = image.cgImage
         let height = image!.height
         let width = image!.width
+        print("ORIGINAL serialImagePixels[0].red: " + String(serialImagePixels[0].red))
+//        print("ORIGINAL serialImagePixels[0].green: " + String(serialImagePixels[0].green))
+//        print("ORIGINAL serialImagePixels[0].blue: " + String(serialImagePixels[0].blue))
+
         
-        
-        
+        print("Vertical Shift processing...")
         // Vertical Shift
         for y in 0..<height {
             for x in 0..<width {
                 let index = y * width + x
-                var pixel = pixels[index]
+                var pixel = serialImagePixels[index]
                 if pixel.red != 255 {
-                    let redValue = Double(pixel.red)  // Convert the red component to Double
+                    let redValue = Float(pixel.red)  // Convert the red component to Float
                     let adjustedValue = 255 - redValue // Invert the red value
                     let scaledValue = adjustedValue * verShift // Apply the vertical shift scaling
                     let finalValue = 255 - scaledValue // Invert the value back
@@ -296,7 +113,7 @@ class LinearFilterModel: ObservableObject {
                     pixel.red = UInt8(max(0, min(255, finalValue)))
                 }
                 if pixel.green != 255 {
-                    let greenValue = Double(pixel.green)
+                    let greenValue = Float(pixel.green)
                     let adjustedValue = 255 - greenValue
                     let scaledValue = adjustedValue * verShift
                     let finalValue = 255 - scaledValue
@@ -304,85 +121,160 @@ class LinearFilterModel: ObservableObject {
                     pixel.green = UInt8(max(0, min(255, finalValue)))
                 }
                 if pixel.blue != 255 {
-                    let blueValue = Double(pixel.blue)
+                    let blueValue = Float(pixel.blue)
                     let adjustedValue = 255 - blueValue
                     let scaledValue = adjustedValue * verShift
                     let finalValue = 255 - scaledValue
                     
                     pixel.blue = UInt8(max(0, min(255, finalValue)))
                 }
-                pixels[index] = pixel
+                serialImagePixels[index] = pixel
             }
         }
+        print("Vertical Shift DONE")
+
         
+        
+        
+        
+        print("Horizontal Shift processing...")
         // Horizontal Shift
-        
-        let FOCAL_LENGTH = 6.86
-        let horAoV = angleOfView(9.8, FOCAL_LENGTH)
-        let vertAoV = angleOfView(7.3, FOCAL_LENGTH)
+        let FOCAL_LENGTH: Float = 6.86
+//        let horAoV = angleOfView(9.8, FOCAL_LENGTH)
+//        let vertAoV = angleOfView(7.3, FOCAL_LENGTH)
+        let horAoV: Float = 6.0 //TODO: for testing purpose
+        let vertAoV: Float = 6.0
         let imgAngSize = horAoV * vertAoV
-        
-        var ux: [[Double]]?
-        var uy: [[Double]]?
+        print("horAoV: " + String(horAoV))
+        print("vertAoV: " + String(vertAoV))
+//        print("imgAngSize: " + String(imgAngSize))
+
+        var ux: [[Float]]?
+        var uy: [[Float]]?
         (ux, uy) = createMeshGrid(height, width, vertAoV, horAoV)
         
+        var meanR: Float = 0
+        var meanG: Float = 0
+        var meanB: Float = 0
+        (meanR, meanG, meanB) = meanLum(image: image!, pixels: serialImagePixels)
+        
+        let sSF0: [[Float]] = sSF0(ux: ux!, uy: uy!)
+        let sSF: [[Float]] = sSF(sSF0: sSF0, horShift: horShift)
         
         
         
         
-        var meanR: Double = 0
-        var meanG: Double = 0
-        var meanB: Double = 0
-        (meanR, meanG, meanB) = meanLum(image: image!, pixels: pixels)
         
-        
-        let sSF0: [[Double]] = sSF0(ux: ux!, uy: uy!)
-        let sSF: [[Double]] = sSF(sSF0: sSF0, horShift: horShift)
-        
-        
-        
-        
-        var count = 0;
-        for meanLum in [meanR, meanG, meanB] {
-            let CSF0: [[Double]] = csf(meanLum: meanLum, sSF_0: sSF0, imgAngSize: imgAngSize)
-            let CSF: [[Double]] = csf(meanLum: meanLum, sSF_0: sSF, imgAngSize: imgAngSize)
-            
-            let nCSF: [[Double]] = nCSF(CSF: CSF, CSF0: CSF0)
-              
-            
-            //Y = np.fft.fft2(thisimage)
-            //filtImg = np.fft.ifft2(nCSF*Y)
-            //finalImg[:,:,j] = filtImg.astype(np.uint8)
-            let filtImg: [[Double]] = [[0, 1, 2]]
-            
-            
-            for y in 0..<height {
-                for x in 0..<width {
-                    let index = y * width + x
-                    var pixel = pixels[index]
-                    if count == 0 {
-                        pixel.red = UInt8(filtImg[y][x])
-                        pixels[index] = pixel
-                    } else if count == 1 {
-                        pixel.green = UInt8(filtImg[y][x])
-                        pixels[index] = pixel
-                    } else {
-                        pixel.blue = UInt8(filtImg[y][x])
-                        pixels[index] = pixel
-                    }
-                    
-                }
-            }
-            count+=1
+        var singleChannelPixels = [[Float]](repeating: [Float](repeating: 0, count:width * height), count: 3)
+
+        for i in 0..<width * height {
+            singleChannelPixels[0][i] = Float(serialImagePixels[i].red)
+            singleChannelPixels[1][i] = Float(serialImagePixels[i].green)
+            singleChannelPixels[2][i] = Float(serialImagePixels[i].blue)
         }
         
+        var colorChannelIdx = 0;
+        
+//        print("Horizontal Shift: Processing FFT...")
+        
+        // Usage example (replace 'pixels', 'width', and 'height' with actual values)
+        convertTo2DMatrixAndSaveToFile(serialImagePixels: serialImagePixels, width: width, height: height)
+
+        for meanLum in [meanR, meanG, meanB] {
+            print("-------------------------------------------------------------------------------------------")
+            let CSF0: [[Float]] = csf(meanLum: meanLum, sSF_0: sSF0, imgAngSize: imgAngSize)
+            let CSF: [[Float]] = csf(meanLum: meanLum, sSF_0: sSF, imgAngSize: imgAngSize)
+            let nCSF: [[Float]] = nCSF(CSF: CSF, CSF0: CSF0)
+            
+            
+            
+            
+            
+            
+            
+            
+            //PRINT DEBUG START
+
+            // Convert the 2D array into a string with newline characters for better readability
+//            let nCSFString = nCSF.map { row in
+//                row.map { String($0) }.joined(separator: ", ")
+//            }.joined(separator: "\n")
+//
+//            // Specify the file path where you want to save the data
+//            let fileURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!.appendingPathComponent("nCSF.txt")
+//            print("File written at: \(fileURL)")
+//
+//            // Write the string to the text file
+//            do {
+//                try nCSFString.write(to: fileURL, atomically: true, encoding: .utf8)
+//                print("Data was written to the file successfully.")
+//            } catch {
+//                print("An error occurred while writing to the file: \(error)")
+//            }
+            //PRINT DEBUG END
+            
+            
+            
+            
+
+            
+            
+            let Y: (real: [Float], imag: [Float]) = performFFT(serialImagePixels: &singleChannelPixels[colorChannelIdx], width: width, height: height)
+            var yNCSF = arrayEleMul(nCSF: nCSF, Y: Y, width: width, height: height)
+            let filtImg: (real: [Float], imag: [Float]) = performIFFT(inputPixels: &yNCSF, width: width, height: height)
+            
+            for index in 0..<width*height {
+                singleChannelPixels[colorChannelIdx][index] = filtImg.real[index]
+            }
+            colorChannelIdx += 1
+
+        }
+//        print("Horizontal Shift: Processing FFT DONE")
+
+//        print("After horizontal singleChannelPixels[0][0]: " + String(singleChannelPixels[0][0]))
+
+        print("------------------------------------")
+        for index in 0..<width*height {
+            
+            let redValue = singleChannelPixels[0][index]
+            let greenValue = singleChannelPixels[1][index]
+            let blueValue = singleChannelPixels[2][index]
+
+            // Check for values greater than UInt8.max and print them
+            if redValue > 255 || greenValue > 255 || blueValue > 255 {
+//                print("Out of bounds value found - Red: \(redValue), Green: \(greenValue), Blue: \(blueValue) at index \(index)")
+            }
+
+            serialImagePixels[index].red = UInt8(min(redValue, 255))
+            serialImagePixels[index].green = UInt8(min(greenValue, 255))
+            serialImagePixels[index].blue = UInt8(min(blueValue, 255))
+            
+            
+        
+//            serialImagePixels[index].red = UInt8(singleChannelPixels[0][index])
+//            serialImagePixels[index].green = UInt8(singleChannelPixels[1][index])
+//            serialImagePixels[index].blue = UInt8(singleChannelPixels[2][index])
+            
+//            serialImagePixels[index].red = UInt8(255)
+//            serialImagePixels[index].green = UInt8(255)
+//            serialImagePixels[index].blue = UInt8(255)
+        }
+        
+        
+//        for index in 62752..<62752+width {
+//            serialImagePixels[index].red = UInt8(255)
+//            serialImagePixels[index].green = UInt8(0)
+//            serialImagePixels[index].blue = UInt8(0)
+//        }
+        print("Horizontal Shift DONE!")
+
         
     }
     
     
     
     
-    func applyFilter(to imgData: Data, va: Double, cs: Double) -> UIImage? {
+    func applyFilter(to imgData: Data, va: Float, cs: Float) -> UIImage? {
         
         //        guard let cgImage = image.cgImage else { return nil }
         let image = UIImage(data: imgData)!
@@ -408,9 +300,9 @@ class LinearFilterModel: ObservableObject {
         
         imageContext.draw(cgImage!, in: CGRect(x: 0, y: 0, width: width, height: height))
         
-        let pixels = UnsafeMutableBufferPointer<Pixel>(start: imageData, count: width * height)
+        let pixels = UnsafeMutableBufferPointer<LinearFilterModel.Pixel>(start: imageData, count: width * height)
         
-        shifting(image: image, pixels: pixels, va: va, cs: cs)
+        shifting(image: image, serialImagePixels: pixels, va: va, cs: cs)
         
         guard let imageContext = CGContext(
             data: pixels.baseAddress,
@@ -426,10 +318,6 @@ class LinearFilterModel: ObservableObject {
         guard let newCGImage = imageContext.makeImage() else { return nil }
         return UIImage(cgImage: newCGImage, scale: image.scale, orientation: image.imageOrientation)
     }
-    
-    
-    
-    
     
     
     
@@ -461,15 +349,6 @@ class LinearFilterModel: ObservableObject {
         }
         
         
-    }
-    
-    
-    
-    struct CSVRow {
-        let va: Double
-        let cs: Double
-        let a: Double
-        let b: Double
     }
     
     
