@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/billhan/Desktop/Dev/EVA/EVALabel/eva-app.xcodeproj">
+      location = "self:/Users/billhan/Desktop/Dev/EVA/eva-app/eva-app.xcodeproj">
    </FileRef>
 </Workspace>
