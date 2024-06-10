@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct EVALabelApp: App {
+struct EVAApp: App {
     var body: some Scene {
         WindowGroup {
             IntroView()
